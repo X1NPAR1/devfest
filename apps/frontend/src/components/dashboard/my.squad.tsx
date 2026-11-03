@@ -110,7 +110,7 @@ export const MySquad: FC<{
                 [ {props.user.squad.members.length} / 5 participants ]
               </div>
               <div className="flex gap-[32px]">
-                <Members user={props.user} />
+                <Members user={props.user} mutate={props.mutate} />
               </div>
             </div>
             <div className="bg-[#191919] p-[40px] rounded-[16px] flex flex-col gap-[40px]">
