@@ -38,7 +38,7 @@ export const LeaderboardSearch: FC<{
   onChange: (value: string) => void;
 }> = ({ value, onChange }) => {
   return (
-    <div className="flex bg-[#191919] rounded-[12px] h-[72px] px-[32px]">
+    <div className="flex bg-[#191919] rounded-[12px] h-[72px] px-[32px] focus-within:ring-2 focus-within:ring-white/60">
       <input
         type="search"
         aria-label="Search squads by name"
