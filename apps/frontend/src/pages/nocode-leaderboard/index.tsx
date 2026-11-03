@@ -2,6 +2,16 @@ import { Wrapper } from '@frontend/components/layout/wrapper';
 import Seo from '@frontend/components/seo/seo';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useMemo } from 'react';
+import {
+  LeaderboardEmpty,
+  LeaderboardSearch,
+  useLeaderboardSearch,
+} from '@frontend/components/leaderboard/leaderboard.search';
+import {
+  filterLeaderboard,
+  rankLeaderboard,
+} from '@frontend/utils/leaderboard.search';
 import { getLeaderBoardNoCode } from '@frontend/queries/nocode-leaderboard';
 import dynamic from 'next/dynamic';
 
@@ -19,6 +29,12 @@ export default function Index(props: {
 }) {
   const { leaderBoard } = props;
   const router = useRouter();
+  const { search, setSearch, query } = useLeaderboardSearch();
+  const ranked = useMemo(() => rankLeaderboard(leaderBoard), [leaderBoard]);
+  const filtered = useMemo(
+    () => filterLeaderboard(ranked, query),
+    [ranked, query]
+  );
   return (
     <Wrapper>
       <Seo
@@ -31,18 +47,19 @@ export default function Index(props: {
 
       <div>
         <div className="flex flex-col w-full max-w-[800px] mx-auto gap-2.5">
+          <LeaderboardSearch value={search} onChange={setSearch} />
           <div className="grid grid-cols-[100px,1fr,100px] rounded-[12px] bg-chatGrad h-[72px] px-[32px]">
             <div className="text-left flex items-center">PLACE</div>
             <div className="flex items-center">NAME</div>
             <div className="flex items-center">SCORE</div>
           </div>
-          {leaderBoard.map((p, index) => (
+          {filtered.map((p) => (
             <div
               onClick={() => router.push(`/nocode-leaderboard/${p.id}`)}
               key={p.id}
               className="cursor-pointer grid grid-cols-[100px,1fr,100px] bg-[#191919] hover:bg-[#333333] rounded-[12px] h-[72px] px-[32px]"
             >
-              <div className="text-left flex items-center">{index + 1}</div>
+              <div className="text-left flex items-center">{p.place}</div>
               <div className="flex items-center gap-[20px]">
                 <Link href={`/nocode-leaderboard/${p.id}`}>{p.name}</Link>
                 <div onClick={e => e.stopPropagation()}>
@@ -52,6 +69,9 @@ export default function Index(props: {
               <div className="flex items-center">{p.noCodeScore}</div>
             </div>
           ))}
+          {!filtered.length && (
+            <LeaderboardEmpty onClear={() => setSearch('')} />
+          )}
         </div>
       </div>
     </Wrapper>
